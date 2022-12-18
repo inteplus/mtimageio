@@ -14,6 +14,7 @@ setup(
     # ],
     install_requires=[
         # 'h5py>=3', # for pdh5 file format. Lazy import because TX2 may not need it.
+        "Pillow>=9.0",  # for processing PNG images
         "imageio>=2.15",  # for loading image files in a modern way
         "mtbase>=3.1",  # to have mt.np.dequantise_images
         "mtgeo>=1.8",  # to have the latest mt.opencv.image.Image implementation
