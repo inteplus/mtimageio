@@ -17,6 +17,6 @@ setup(
         "Pillow>=9.0",  # for processing PNG images
         "imageio>=2.15",  # for loading image files in a modern way
         "mtbase>=3.1",  # to have mt.np.dequantise_images
-        "mtgeo>=1.8",  # to have the latest mt.opencv.image.Image implementation
+        "mtopencv>=1.8",  # to have the latest mt.opencv.image.Image implementation
     ],
 )
