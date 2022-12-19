@@ -2,6 +2,7 @@
 
 import typing as tp
 
+import json
 from imageio import v3 as iio
 from PIL import PngImagePlugin
 
