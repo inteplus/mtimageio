@@ -1,5 +1,6 @@
 """Extra imread functions."""
 
+import typing as tp
 
 from imageio import v3 as iio
 
