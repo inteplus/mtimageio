@@ -3,6 +3,7 @@
 import typing as tp
 
 from imageio import v3 as iio
+from PIL import PngImagePlugin
 
 from mt.base import aio, path
 from mt import np, cv
@@ -10,6 +11,7 @@ from mt import np, cv
 
 __all__ = [
     "imwrite_asyn",
+    "immencode",
 ]
 
 
@@ -80,3 +82,51 @@ async def imwrite_asyn(
     )
 
     return await aio.write_binary(fname, data, context_vars=context_vars)
+
+
+def immencode(imm: cv.Image) -> bytes:
+    """Encodes a :class:`mt.cv.opencv.Image` instance as a PNG image with metadata.
+
+    Parameters
+    ----------
+    imm : cv.Image
+        an image with metadata
+
+    Returns
+    -------
+    data : bytes
+        the image encoded into PNG content, ready for writing to file
+
+    Notes
+    -----
+    All metadata values are converted to json strings if they are not strings.
+
+    See Also
+    --------
+    imageio.v3.imwrite
+        the underlying imwrite function
+    """
+
+    pnginfo = PngImagePlugin.PngInfo()
+    pnginfo.add_text("pixel_format", imm.pixel_format)
+    for k, v in imm.meta.items():
+        if not isinstance(v, str):
+            v = json.dumps(v)
+        pnginfo.add_text(k, v)
+
+    pixel_format2iio_mode = {
+        "gray": "L",
+        "rgba": "RGBA",
+        "rgb": "RGB",
+    }
+    mode = pixel_format2iio_mode[imm.pixel_format]
+
+    data = iio.imwrite(
+        "<bytes>",
+        imm.image,
+        plugin="pillow",
+        extension=".png",
+        mode=mode,
+        pnginfo=pnginfo,
+    )
+    return data

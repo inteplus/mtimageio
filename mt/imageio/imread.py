@@ -91,7 +91,6 @@ def immdecode(
     extension: tp.Optional[str] = None,
     format_hint: tp.Optional[str] = None,
     plugin_kwargs: dict = {},
-    context_vars: dict = {},
 ) -> cv.Image:
     """Decodes an image file content and its metadata using :module:`imageio.v3`.
 
