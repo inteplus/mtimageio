@@ -236,7 +236,7 @@ def immread(
     return aio.srun(
         immread,
         filepath,
-        plugin=pluging,
+        plugin=plugin,
         extension=extension,
         format_hint=format_hint,
         plugin_kwargs=plugin_kwargs,
