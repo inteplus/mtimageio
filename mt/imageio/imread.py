@@ -146,7 +146,7 @@ async def immread_asyn(
         the underlying immeta function
     """
 
-    ext = path.splitext(path.basename(filepath)).lower()
+    ext = path.splitext(path.basename(filepath))[1].lower()
     if ext == ".imm":
         return await cv.immload_asyn(filepath, context_vars=context_vars)
 
