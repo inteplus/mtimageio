@@ -136,8 +136,8 @@ def immencode(imm: cv.Image) -> bytes:
 
 
 async def immwrite_asyn(
-    image: cv.Image,
     filepath: str,
+    image: cv.Image,
     file_format: str = "hdf5",
     file_mode: int = 0o664,
     file_write_delayed: bool = False,
@@ -148,10 +148,10 @@ async def immwrite_asyn(
 
     Parameters
     ----------
-    imm : Image
-        an image with metadata
     filepath : str
         local filepath to save the content to.
+    imm : Image
+        an image with metadata
     file_format : {'hdf5', 'png'}
         format to be used for saving the content.
     file_mode : int
@@ -195,8 +195,8 @@ async def immwrite_asyn(
 
 
 def immwrite(
-    image: cv.Image,
     filepath: str,
+    image: cv.Image,
     file_format: str = "hdf5",
     file_mode: int = 0o664,
     file_write_delayed: bool = False,
@@ -207,10 +207,10 @@ def immwrite(
 
     Parameters
     ----------
-    imm : Image
-        an image with metadata
     filepath : str
         local filepath to save the content to.
+    imm : Image
+        an image with metadata
     file_format : {'hdf5', 'png'}
         format to be used for saving the content.
     file_mode : int
