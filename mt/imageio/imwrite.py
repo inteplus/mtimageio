@@ -21,10 +21,9 @@ async def imwrite_asyn(
     format_hint: tp.Optional[str] = None,
     plugin_kwargs: dict = {},
     context_vars: dict = {},
-    logger=None,
     **kwargs
 ):
-    """An asyn function that saves an image file for ML using :func:`imageio.v3.imwrite`.
+    """An asyn function that saves an image file using :func:`imageio.v3.imwrite`.
 
     Parameters
     ----------
@@ -45,8 +44,6 @@ async def imwrite_asyn(
     context_vars : dict
         a dictionary of context variables within which the function runs. It must include
         `context_vars['async']` to tell whether to invoke the function asynchronously or not.
-    logger : logging.Logger or equivalent, optional
-        logger for debugging purposes
 
     Returns
     -------
