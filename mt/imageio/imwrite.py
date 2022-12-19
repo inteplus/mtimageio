@@ -233,8 +233,8 @@ def immwrite(
 
     return aio.srun(
         immwrite_asyn,
-        imm,
         filepath,
+        imm,
         file_format=file_format,
         file_mode=file_mode,
         file_write_delayed=file_write_delayed,
