@@ -13,6 +13,8 @@ from mt import np, cv
 __all__ = [
     "imwrite_asyn",
     "immencode",
+    "immwrite_asyn",
+    "immwrite",
 ]
 
 
@@ -131,3 +133,110 @@ def immencode(imm: cv.Image) -> bytes:
         pnginfo=pnginfo,
     )
     return data
+
+
+async def immwrite_asyn(
+    image: cv.Image,
+    filepath: str,
+    file_format: str = "hdf5",
+    file_mode: int = 0o664,
+    file_write_delayed: bool = False,
+    context_vars: dict = {},
+    logger=None,
+):
+    """An asyn function that saves an image with metadata to file.
+
+    Parameters
+    ----------
+    imm : Image
+        an image with metadata
+    filepath : str
+        local filepath to save the content to.
+    file_format : {'hdf5', 'png'}
+        format to be used for saving the content.
+    file_mode : int
+        file mode to be set to using :func:`os.chmod`. If None is given, no setting of file mode
+        will happen.
+    file_write_delayed : bool
+        Only valid in asynchronous mode and the format is 'json'. If True, wraps the file write
+        task into a future and returns the future. In all other cases, proceeds as usual.
+    context_vars : dict
+        a dictionary of context variables within which the function runs. It must include
+        `context_vars['async']` to tell whether to invoke the function asynchronously or not.
+    logger : logging.Logger, optional
+        logger for debugging purposes
+
+    Returns
+    -------
+    int
+        the number of bytes written to file
+    """
+
+    if file_format == "hdf5":
+        return await cv.immsave_asyn(
+            imm,
+            filepath,
+            file_format=file_format,
+            file_mode=file_mode,
+            file_write_delayed=file_write_delayed,
+            image_codec="png",
+            context_vars=context_vars,
+            logger=logger,
+        )
+
+    data = immencode(imm)
+    return await aio.write_binary(
+        filepath,
+        data,
+        file_mode=file_mode,
+        file_write_delayed=file_write_delayed,
+        context_vars=context_vars,
+    )
+
+
+def immwrite(
+    image: cv.Image,
+    filepath: str,
+    file_format: str = "hdf5",
+    file_mode: int = 0o664,
+    file_write_delayed: bool = False,
+    context_vars: dict = {},
+    logger=None,
+):
+    """Saves an image with metadata to file.
+
+    Parameters
+    ----------
+    imm : Image
+        an image with metadata
+    filepath : str
+        local filepath to save the content to.
+    file_format : {'hdf5', 'png'}
+        format to be used for saving the content.
+    file_mode : int
+        file mode to be set to using :func:`os.chmod`. If None is given, no setting of file mode
+        will happen.
+    file_write_delayed : bool
+        Only valid in asynchronous mode and the format is 'json'. If True, wraps the file write
+        task into a future and returns the future. In all other cases, proceeds as usual.
+    context_vars : dict
+        a dictionary of context variables within which the function runs. It must include
+        `context_vars['async']` to tell whether to invoke the function asynchronously or not.
+    logger : logging.Logger, optional
+        logger for debugging purposes
+
+    Returns
+    -------
+    int
+        the number of bytes written to file
+    """
+
+    return aio.srun(
+        immwrite_asyn,
+        imm,
+        filepath,
+        file_format=file_format,
+        file_mode=file_mode,
+        file_write_delayed=file_write_delayed,
+        logger=logger,
+    )
