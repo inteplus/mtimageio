@@ -2,7 +2,7 @@
 
 import asyncio
 import argparse
-from mt import cv, np
+from mt import cv, np, iio
 from mt.base import filetype
 
 
@@ -75,7 +75,7 @@ def view(image, max_width=640, as_ansi=True):
 
 
 async def main(args, context_vars: dict = {}):
-    imm = await cv.immload_asyn(args.imm_file, context_vars=context_vars)
+    imm = await iio.imread_asyn(args.imm_file, context_vars=context_vars)
     print("Image path: {}".format(args.imm_file))
     print("Pixel format: {}".format(imm.pixel_format))
     print("Resolution: {}x{}".format(imm.image.shape[1], imm.image.shape[0]))
