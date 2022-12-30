@@ -137,7 +137,7 @@ def immencode(imm: cv.Image) -> bytes:
 
 async def immwrite_asyn(
     filepath: str,
-    image: cv.Image,
+    imm: cv.Image,
     file_format: str = "hdf5",
     file_mode: int = 0o664,
     file_write_delayed: bool = False,
@@ -196,7 +196,7 @@ async def immwrite_asyn(
 
 def immwrite(
     filepath: str,
-    image: cv.Image,
+    imm: cv.Image,
     file_format: str = "hdf5",
     file_mode: int = 0o664,
     file_write_delayed: bool = False,
