@@ -6,8 +6,7 @@ import json
 from imageio import v3 as iio
 from PIL import PngImagePlugin
 
-from mt.base import aio, path
-from mt import np, cv
+from mt import np, cv, path, aio
 
 
 __all__ = [
