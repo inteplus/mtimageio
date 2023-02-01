@@ -104,4 +104,4 @@ def immview(
         logger.info("Resolution: {}x{}".format(imm.image.shape[1], imm.image.shape[0]))
         logger.info("Meta:")
         logger.info(imm.meta)
-    view(get_image(imm), max_width=max_width, as_ansi=not args.use_highgui)
+    view(get_image(imm), max_width=max_width, as_ansi=not use_highgui)
