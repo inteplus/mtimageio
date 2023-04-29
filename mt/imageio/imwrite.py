@@ -25,7 +25,7 @@ async def imwrite_asyn(
     format_hint: tp.Optional[str] = None,
     plugin_kwargs: dict = {},
     context_vars: dict = {},
-    **kwargs
+    **kwargs,
 ):
     """An asyn function that saves an image file using :func:`imageio.v3.imwrite`.
 
@@ -68,7 +68,7 @@ async def imwrite_asyn(
             plugin=plugin,
             extension=extension,
             format_hint=format_hint,
-            **plugin_kwargs
+            **plugin_kwargs,
         )
 
     if extension is None:
@@ -80,35 +80,13 @@ async def imwrite_asyn(
         plugin=plugin,
         extension=extension,
         format_hint=format_hint,
-        **plugin_kwargs
+        **plugin_kwargs,
     )
 
     return await aio.write_binary(fname, data, context_vars=context_vars)
 
 
-def immencode(imm: cv.Image) -> bytes:
-    """Encodes a :class:`mt.cv.opencv.Image` instance as a PNG image with metadata.
-
-    Parameters
-    ----------
-    imm : cv.Image
-        an image with metadata
-
-    Returns
-    -------
-    data : bytes
-        the image encoded into PNG content, ready for writing to file
-
-    Notes
-    -----
-    All metadata values are converted to json strings if they are not strings.
-
-    See Also
-    --------
-    imageio.v3.imwrite
-        the underlying imwrite function
-    """
-
+def immencode_png(imm: cv.Image) -> bytes:
     pnginfo = PngImagePlugin.PngInfo()
     pnginfo.add_text("pixel_format", imm.pixel_format)
     for k, v in imm.meta.items():
@@ -134,6 +112,66 @@ def immencode(imm: cv.Image) -> bytes:
     return data
 
 
+def immencode_webp(imm: cv.Image) -> bytes:
+    pnginfo = PngImagePlugin.PngInfo()
+    pnginfo.add_text("pixel_format", imm.pixel_format)
+    for k, v in imm.meta.items():
+        if not isinstance(v, str):
+            v = json.dumps(v)
+        pnginfo.add_text(k, v)
+
+    pixel_format2iio_mode = {
+        "gray": "L",
+        "rgba": "RGBA",
+        "rgb": "RGB",
+    }
+    mode = pixel_format2iio_mode[imm.pixel_format]
+
+    data = iio.imwrite(
+        "<bytes>",
+        imm.image,
+        plugin="pillow",
+        extension=".png",
+        mode=mode,
+        pnginfo=pnginfo,
+    )
+    return data
+
+
+def immencode(imm: cv.Image, encoding_format: str = "png") -> bytes:
+    """Encodes a :class:`mt.cv.opencv.Image` instance as a PNG or WEBP image with metadata.
+
+    Parameters
+    ----------
+    imm : cv.Image
+        an image with metadata
+    encoding_format : {'png', 'webp'}
+        the encoding format
+
+    Returns
+    -------
+    data : bytes
+        the encoded image, ready for writing to file
+
+    Notes
+    -----
+    All metadata values are converted to json strings if they are not strings.
+
+    See Also
+    --------
+    imageio.v3.imwrite
+        the underlying imwrite function
+    """
+
+    if encoding_format == "png":
+        return immencode_png(imm)
+
+    if encoding_format == "webp":
+        return immencode_webp(imm)
+
+    raise NotImplementedError(f"Unknown encoding format '{encoding_format}'.")
+
+
 async def immwrite_asyn(
     filepath: str,
     imm: cv.Image,
@@ -151,7 +189,7 @@ async def immwrite_asyn(
         local filepath to save the content to.
     imm : Image
         an image with metadata
-    file_format : {'hdf5', 'png'}
+    file_format : {'hdf5', 'png', 'webp'}
         format to be used for saving the content.
     file_mode : int
         file mode to be set to using :func:`os.chmod`. If None is given, no setting of file mode
@@ -183,7 +221,7 @@ async def immwrite_asyn(
             logger=logger,
         )
 
-    data = immencode(imm)
+    data = immencode(imm, encoding_format=file_format)
     return await aio.write_binary(
         filepath,
         data,
@@ -210,7 +248,7 @@ def immwrite(
         local filepath to save the content to.
     imm : Image
         an image with metadata
-    file_format : {'hdf5', 'png'}
+    file_format : {'hdf5', 'png', 'webp'}
         format to be used for saving the content.
     file_mode : int
         file mode to be set to using :func:`os.chmod`. If None is given, no setting of file mode
