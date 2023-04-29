@@ -113,27 +113,9 @@ def immencode_png(imm: cv.Image) -> bytes:
 
 
 def immencode_webp(imm: cv.Image) -> bytes:
-    pnginfo = PngImagePlugin.PngInfo()
-    pnginfo.add_text("pixel_format", imm.pixel_format)
-    for k, v in imm.meta.items():
-        if not isinstance(v, str):
-            v = json.dumps(v)
-        pnginfo.add_text(k, v)
-
-    pixel_format2iio_mode = {
-        "gray": "L",
-        "rgba": "RGBA",
-        "rgb": "RGB",
-    }
-    mode = pixel_format2iio_mode[imm.pixel_format]
-
+    xmp = json.dumps(imm.meta)
     data = iio.imwrite(
-        "<bytes>",
-        imm.image,
-        plugin="pillow",
-        extension=".png",
-        mode=mode,
-        pnginfo=pnginfo,
+        "<bytes>", imm.image, plugin="pillow", extension=".webp", lossless=True, xmp=xmp
     )
     return data
 
@@ -175,7 +157,7 @@ def immencode(imm: cv.Image, encoding_format: str = "png") -> bytes:
 async def immwrite_asyn(
     filepath: str,
     imm: cv.Image,
-    file_format: str = "hdf5",
+    file_format: tp.Optional[str] = None,
     file_mode: int = 0o664,
     file_write_delayed: bool = False,
     context_vars: dict = {},
@@ -189,8 +171,9 @@ async def immwrite_asyn(
         local filepath to save the content to.
     imm : Image
         an image with metadata
-    file_format : {'hdf5', 'png', 'webp'}
-        format to be used for saving the content.
+    file_format : {'hdf5', 'png', 'webp'}, optional
+        format to be used for saving the content. If not provided, it will be figured out from the
+        file extension.
     file_mode : int
         file mode to be set to using :func:`os.chmod`. If None is given, no setting of file mode
         will happen.
@@ -208,6 +191,10 @@ async def immwrite_asyn(
     int
         the number of bytes written to file
     """
+
+    if file_format is None:
+        ext = path.splitext(filepath)[1]
+        file_format = ext[1:]
 
     if file_format == "hdf5":
         return await cv.immsave_asyn(
@@ -234,7 +221,7 @@ async def immwrite_asyn(
 def immwrite(
     filepath: str,
     imm: cv.Image,
-    file_format: str = "hdf5",
+    file_format: tp.Optional[str] = None,
     file_mode: int = 0o664,
     file_write_delayed: bool = False,
     context_vars: dict = {},
@@ -248,8 +235,9 @@ def immwrite(
         local filepath to save the content to.
     imm : Image
         an image with metadata
-    file_format : {'hdf5', 'png', 'webp'}
-        format to be used for saving the content.
+    file_format : {'hdf5', 'png', 'webp'}, optional
+        format to be used for saving the content. If not provided, it will be figured out from the
+        file extension.
     file_mode : int
         file mode to be set to using :func:`os.chmod`. If None is given, no setting of file mode
         will happen.
