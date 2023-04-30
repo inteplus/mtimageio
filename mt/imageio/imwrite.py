@@ -115,7 +115,15 @@ def immencode_png(imm: cv.Image) -> bytes:
 def immencode_webp(imm: cv.Image) -> bytes:
     xmp = json.dumps(imm.meta)
     data = iio.imwrite(
-        "<bytes>", imm.image, plugin="pillow", extension=".webp", lossless=True, xmp=xmp
+        "<bytes>",
+        imm.image,
+        plugin="pillow",
+        extension=".webp",
+        lossless=True,
+        exact=True,  # pillow default is False
+        quality=90,  # pillow default is 80
+        method=5,  # pillow default is 4
+        xmp=xmp,
     )
     return data
 
