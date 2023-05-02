@@ -199,7 +199,6 @@ def immwrite(
     file_format: str = "hdf5",
     file_mode: int = 0o664,
     file_write_delayed: bool = False,
-    context_vars: dict = {},
     logger=None,
 ):
     """Saves an image with metadata to file.
@@ -218,9 +217,6 @@ def immwrite(
     file_write_delayed : bool
         Only valid in asynchronous mode and the format is 'json'. If True, wraps the file write
         task into a future and returns the future. In all other cases, proceeds as usual.
-    context_vars : dict
-        a dictionary of context variables within which the function runs. It must include
-        `context_vars['async']` to tell whether to invoke the function asynchronously or not.
     logger : logging.Logger, optional
         logger for debugging purposes
 
