@@ -1,6 +1,7 @@
 """Extra imread functions."""
 
 import typing as tp
+import json
 
 from imageio import v3 as iio
 
@@ -136,6 +137,15 @@ def immdecode(
     """
 
     meta = iio.immeta(data, plugin=plugin, extension=extension, **plugin_kwargs)
+    if "xmp" in meta and isinstance(meta["xmp"], bytes):
+        meta2 = json.loads(meta["xmp"])
+        del meta["xmp"]
+        for x in ["mode", "shape"]:
+            meta2[x] = meta[x]
+            del meta[x]
+        # meta2["image_meta"] = meta # MT-TODO: expose later in future.
+        meta = meta2
+
     image = iio.imread(
         data,
         plugin=plugin,
