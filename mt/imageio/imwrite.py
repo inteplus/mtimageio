@@ -112,23 +112,36 @@ def immencode_png(imm: cv.Image) -> bytes:
     return data
 
 
-def immencode_webp(imm: cv.Image) -> bytes:
+def immencode_webp(
+    imm: cv.Image, lossless: bool = True, quality: tp.Optional[int] = None
+) -> bytes:
     xmp = json.dumps(imm.meta)
+    if lossless:  # mtimageio default, not pillow default
+        if quality is None:
+            quality = 90  # pillow default is 80
+    else:
+        if quality is None:
+            quality = 80  # pillow default is 80
     data = iio.imwrite(
         "<bytes>",
         imm.image,
         plugin="pillow",
         extension=".webp",
-        lossless=True,
+        lossless=lossless,
         exact=True,  # pillow default is False
-        quality=90,  # pillow default is 80
+        quality=quality,
         method=5,  # pillow default is 4
         xmp=xmp,
     )
     return data
 
 
-def immencode(imm: cv.Image, encoding_format: str = "png") -> bytes:
+def immencode(
+    imm: cv.Image,
+    encoding_format: str = "png",
+    lossless: bool = True,
+    quality: tp.Optional[int] = None,
+) -> bytes:
     """Encodes a :class:`mt.cv.opencv.Image` instance as a PNG or WEBP image with metadata.
 
     Parameters
@@ -137,6 +150,12 @@ def immencode(imm: cv.Image, encoding_format: str = "png") -> bytes:
         an image with metadata
     encoding_format : {'png', 'webp'}
         the encoding format
+    lossless : bool
+        whether or not to compress with lossless mode. Only valid for 'webp' format. For 'png'
+        format, it is always lossless.
+    quality : int, optional
+        a number between 0 and 100. Only valid for 'webp'. If not provided, 90 for lossless and 80
+        for lossy.
 
     Returns
     -------
@@ -157,7 +176,7 @@ def immencode(imm: cv.Image, encoding_format: str = "png") -> bytes:
         return immencode_png(imm)
 
     if encoding_format == "webp":
-        return immencode_webp(imm)
+        return immencode_webp(imm, lossless=lossless, quality=quality)
 
     raise NotImplementedError(f"Unknown encoding format '{encoding_format}'.")
 
@@ -168,6 +187,8 @@ async def immwrite_asyn(
     file_format: tp.Optional[str] = None,
     file_mode: int = 0o664,
     file_write_delayed: bool = False,
+    lossless: bool = True,
+    quality: tp.Optional[int] = None,
     context_vars: dict = {},
     logger=None,
 ):
@@ -188,6 +209,12 @@ async def immwrite_asyn(
     file_write_delayed : bool
         Only valid in asynchronous mode and the format is 'json'. If True, wraps the file write
         task into a future and returns the future. In all other cases, proceeds as usual.
+    lossless : bool
+        whether or not to compress with lossless mode. Only valid for 'webp' format. For 'png'
+        format, it is always lossless.
+    quality : int, optional
+        a number between 0 and 100. Only valid for 'webp'. If not provided, 90 for lossless and 80
+        for lossy.
     context_vars : dict
         a dictionary of context variables within which the function runs. It must include
         `context_vars['async']` to tell whether to invoke the function asynchronously or not.
@@ -216,7 +243,9 @@ async def immwrite_asyn(
             logger=logger,
         )
 
-    data = immencode(imm, encoding_format=file_format)
+    data = immencode(
+        imm, encoding_format=file_format, lossless=lossless, quality=quality
+    )
     return await aio.write_binary(
         filepath,
         data,
@@ -232,6 +261,8 @@ def immwrite(
     file_format: tp.Optional[str] = None,
     file_mode: int = 0o664,
     file_write_delayed: bool = False,
+    lossless: bool = True,
+    quality: tp.Optional[int] = None,
     logger=None,
 ):
     """Saves an image with metadata to file.
@@ -251,6 +282,12 @@ def immwrite(
     file_write_delayed : bool
         Only valid in asynchronous mode and the format is 'json'. If True, wraps the file write
         task into a future and returns the future. In all other cases, proceeds as usual.
+    lossless : bool
+        whether or not to compress with lossless mode. Only valid for 'webp' format. For 'png'
+        format, it is always lossless.
+    quality : int, optional
+        a number between 0 and 100. Only valid for 'webp'. If not provided, 90 for lossless and 80
+        for lossy.
     logger : logging.Logger, optional
         logger for debugging purposes
 
@@ -267,5 +304,7 @@ def immwrite(
         file_format=file_format,
         file_mode=file_mode,
         file_write_delayed=file_write_delayed,
+        lossless=lossless,
+        quality=quality,
         logger=logger,
     )
