@@ -236,7 +236,7 @@ async def immwrite_asyn(
             filepath,
             file_mode=file_mode,
             file_write_delayed=file_write_delayed,
-            image_codec="png",
+            image_codec="jpg",
             file_format="json",
             context_vars=context_vars,
             logger=logger,
