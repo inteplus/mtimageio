@@ -199,7 +199,7 @@ async def immwrite_asyn(
         local filepath to save the content to.
     imm : Image
         an image with metadata
-    file_format : {'hdf5', 'png', 'webp'}, optional
+    file_format : {'imm', 'hdf5', 'png', 'webp'}, optional
         format to be used for saving the content. If not provided, it will be figured out from the
         file extension.
     file_mode : int
@@ -229,6 +229,19 @@ async def immwrite_asyn(
     if file_format is None:
         ext = path.splitext(filepath)[1]
         file_format = ext[1:]
+
+    if file_format == "imm":
+        return await cv.immsave_asyn(
+            imm,
+            filepath,
+            file_format=file_format,
+            file_mode=file_mode,
+            file_write_delayed=file_write_delayed,
+            image_codec="png",
+            file_format="json",
+            context_vars=context_vars,
+            logger=logger,
+        )
 
     if file_format == "hdf5":
         return await cv.immsave_asyn(
