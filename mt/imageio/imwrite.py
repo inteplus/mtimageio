@@ -101,13 +101,12 @@ def immencode_png(imm: cv.Image) -> bytes:
     }
     mode = pixel_format2iio_mode[imm.pixel_format]
 
+    image = imm.image
+    if mode == "L" and image.shape == 3:
+        image = image[:, :, 0]
+
     data = iio.imwrite(
-        "<bytes>",
-        imm.image,
-        plugin="pillow",
-        extension=".png",
-        mode=mode,
-        pnginfo=pnginfo,
+        "<bytes>", image, plugin="pillow", extension=".png", mode=mode, pnginfo=pnginfo
     )
     return data
 
