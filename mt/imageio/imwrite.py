@@ -230,11 +230,10 @@ async def immwrite_asyn(
         ext = path.splitext(filepath)[1]
         file_format = ext[1:]
 
-    if file_format == "imm":
+    if file_format in ("imm", "json"):
         return await cv.immsave_asyn(
             imm,
             filepath,
-            file_format=file_format,
             file_mode=file_mode,
             file_write_delayed=file_write_delayed,
             image_codec="png",
