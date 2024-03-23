@@ -24,6 +24,7 @@ async def imwrite_asyn(
     extension: tp.Optional[str] = None,
     format_hint: tp.Optional[str] = None,
     plugin_kwargs: dict = {},
+    make_dirs: bool = False,
     context_vars: dict = {},
     **kwargs,
 ):
@@ -45,6 +46,9 @@ async def imwrite_asyn(
         function.
     plugin_kwargs : dict
         Additional keyword arguments to be passed to the plugin write call.
+    make_dirs : bool
+        Whether or not to make the folders containing the path before writing to the file. Only
+        valid when `fname` is a local filepath.
     context_vars : dict
         a dictionary of context variables within which the function runs. It must include
         `context_vars['async']` to tell whether to invoke the function asynchronously or not.
@@ -83,7 +87,9 @@ async def imwrite_asyn(
         **plugin_kwargs,
     )
 
-    return await aio.write_binary(fname, data, context_vars=context_vars)
+    return await aio.write_binary(
+        fname, data, context_vars=context_vars, make_dirs=make_dirs
+    )
 
 
 def immencode_png(imm: cv.Image) -> bytes:
@@ -186,6 +192,7 @@ async def immwrite_asyn(
     file_format: tp.Optional[str] = None,
     file_mode: int = 0o664,
     file_write_delayed: bool = False,
+    make_dirs: bool = False,
     lossless: bool = True,
     quality: tp.Optional[int] = None,
     context_vars: dict = {},
@@ -208,6 +215,9 @@ async def immwrite_asyn(
     file_write_delayed : bool
         Only valid in asynchronous mode and the format is 'json'. If True, wraps the file write
         task into a future and returns the future. In all other cases, proceeds as usual.
+    make_dirs : bool
+        Whether or not to make the folders containing the path before writing to the file. Only
+        valid when `fname` is a local filepath.
     lossless : bool
         whether or not to compress with lossless mode. Only valid for 'webp' format. For 'png'
         format, it is always lossless.
@@ -236,6 +246,7 @@ async def immwrite_asyn(
             filepath,
             file_mode=file_mode,
             file_write_delayed=file_write_delayed,
+            make_dirs=make_dirs,
             image_codec="jpg",
             file_format="json",
             context_vars=context_vars,
@@ -249,6 +260,7 @@ async def immwrite_asyn(
             file_format=file_format,
             file_mode=file_mode,
             file_write_delayed=file_write_delayed,
+            make_dirs=make_dirs,
             image_codec="png",
             context_vars=context_vars,
             logger=logger,
@@ -262,6 +274,7 @@ async def immwrite_asyn(
         data,
         file_mode=file_mode,
         file_write_delayed=file_write_delayed,
+        make_dirs=make_dirs,
         context_vars=context_vars,
     )
 

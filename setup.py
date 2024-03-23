@@ -17,8 +17,8 @@ setup(
         # 'h5py>=3', # for pdh5 file format. Lazy import because TX2 may not need it.
         "Pillow>=9.0",  # for processing PNG images
         "imageio>=2.15",  # for loading image files in a modern way
-        "mtbase>=3.1",  # to have mt.np.dequantise_images
-        "mtopencv>=1.9",  # to have mtopencv's immview script removed
+        "mtbase>=4.27.2",  # to have an updated write_binary()
+        "mtopencv>=1.11.2",  # to have an updated immsave_asyn()
     ],
     setup_requires=["setuptools-git-versioning<2"],
     setuptools_git_versioning={
