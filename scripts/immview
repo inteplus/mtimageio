@@ -7,6 +7,11 @@ from mt.base import logger
 
 
 async def main(args, context_vars: dict = {}):
+    if args.show_metadata:
+        meta = iio.immeta(args.imm_file)
+        print(json.dumps(meta, indent=2))
+        return
+
     imm = await iio.immread_asyn(args.imm_file, context_vars=context_vars)
     return iio.immview(
         imm,
@@ -32,6 +37,12 @@ if __name__ == "__main__":
         "--use_highgui",
         action="store_true",
         help="Uses OpenCV's highgui module to display the image.",
+    )
+    parser.add_argument(
+        "-m",
+        "--show_metadata",
+        action="store_true",
+        help="To show only the metadata of the IMM file.",
     )
     parser.add_argument("imm_file", type=str, help="The file to view.")
     args = parser.parse_args()
