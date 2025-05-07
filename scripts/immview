@@ -10,6 +10,8 @@ from mt.base import logger
 async def main(args, context_vars: dict = {}):
     if args.show_metadata:
         meta = iio.immeta(args.imm_file)
+        if "xmp" in meta:
+            meta = json.loads(meta["xmp"])
         print(json.dumps(meta, indent=2))
         return
 
