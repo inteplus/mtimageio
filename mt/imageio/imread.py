@@ -10,6 +10,7 @@ from mt import np, cv, path, aio
 
 __all__ = [
     "imread_asyn",
+    "immeta2immmeta",
     "immdecode",
     "immread_asyn",
     "immread",
@@ -85,6 +86,37 @@ async def imread_asyn(
     )
 
 
+def immeta2immmeta(
+    meta: dict,
+) -> dict:
+    """Converts the metadata read by invoking :func:`imageio.v3.immeta` into the metadata of an imm file.
+
+    Parameters
+    ----------
+    meta : dict
+        the output of invoking :func:`imageio.v3.immeta`
+
+    Returns
+    -------
+    dict
+        the converted/adjusted metadata
+
+    See Also
+    --------
+    imageio.v3.immeta
+        the underlying immeta function
+    """
+
+    if "xmp" in meta and isinstance(meta["xmp"], bytes):
+        meta2 = json.loads(meta["xmp"])
+        del meta["xmp"]
+        for x in ["mode", "shape"]:
+            meta2[x] = meta[x]
+            del meta[x]
+        # meta2["image_meta"] = meta # MT-TODO: expose later in future.
+        meta = meta2
+
+
 def immdecode(
     data: bytes,
     plugin: tp.Optional[str] = None,
@@ -137,14 +169,7 @@ def immdecode(
     """
 
     meta = iio.immeta(data, plugin=plugin, extension=extension, **plugin_kwargs)
-    if "xmp" in meta and isinstance(meta["xmp"], bytes):
-        meta2 = json.loads(meta["xmp"])
-        del meta["xmp"]
-        for x in ["mode", "shape"]:
-            meta2[x] = meta[x]
-            del meta[x]
-        # meta2["image_meta"] = meta # MT-TODO: expose later in future.
-        meta = meta2
+    meta = immeta2immmeta(meta)
 
     image = iio.imread(
         data,
