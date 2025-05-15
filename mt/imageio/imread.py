@@ -116,6 +116,8 @@ def immeta2immmeta(
         # meta2["image_meta"] = meta # MT-TODO: expose later in future.
         meta = meta2
 
+    return meta
+
 
 def immdecode(
     data: bytes,
