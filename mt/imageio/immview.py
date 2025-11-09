@@ -66,7 +66,15 @@ def view(image, max_width=640, as_ansi=True):
         image = cv.resize(image, dsize=(max_width, height))
     if as_ansi:
         img2 = cv.cvtColor(image, cv.COLOR_BGR2RGB)
-        print(cv.to_ansi(img2))
+        try:
+            from PIL import Image
+            from term_image.image import AutoImage
+
+            img3 = Image.fromarray(img2)
+            img4 = AutoImage(img3)
+            img4.draw(animate=False)
+        except ImportError:
+            print(cv.to_ansi(img2))
     else:
         cv.namedWindow("image")
         print("Press any key to exit.")
