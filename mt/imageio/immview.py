@@ -55,7 +55,7 @@ def get_image(imm):
         return image
 
     raise ValueError(
-        "Imm with pixel format '{}' is not supported.".format(imm.pixel_format)
+        f"Imm with pixel format '{imm.pixel_format}' is not supported."
     )
 
 
@@ -107,9 +107,9 @@ def immview(
     """
     if logger:
         if filepath:
-            logger.info("Image path: {}".format(filepath))
-        logger.info("Pixel format: {}".format(imm.pixel_format))
-        logger.info("Resolution: {}x{}".format(imm.image.shape[1], imm.image.shape[0]))
+            logger.info(f"Image path: {filepath}")
+        logger.info(f"Pixel format: {imm.pixel_format}")
+        logger.info(f"Resolution: {imm.image.shape[1]}x{imm.image.shape[0]}")
         logger.info("Meta:")
         logger.info(imm.meta)
     view(get_image(imm), max_width=max_width, as_ansi=not use_highgui)
