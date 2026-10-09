@@ -9,6 +9,8 @@ setup(
     name="mtimageio",
     description="Minh-Tri Pham's extra modules using imageio",
     author="Minh-Tri Pham",
+    license="MIT",
+    license_files=["LICENSE"],
     packages=find_namespace_packages(include=["mt.*"]),
     scripts=[
         "scripts/immview",
