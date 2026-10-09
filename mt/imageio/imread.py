@@ -89,7 +89,8 @@ async def imread_asyn(
 def immeta2immmeta(
     meta: dict,
 ) -> dict:
-    """Converts the metadata read by invoking :func:`imageio.v3.immeta` into the metadata of an imm file.
+    """Converts the metadata read by invoking :func:`imageio.v3.immeta` into the metadata of an imm
+    file.
 
     Parameters
     ----------
