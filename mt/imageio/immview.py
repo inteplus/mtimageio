@@ -1,5 +1,10 @@
 #!/usr/bin/python3
 
+"""Viewing an image with metadata, on the terminal or in an OpenCV window.
+
+The public function is :func:`immview`.
+"""
+
 from mt import tp, logg, cv, np
 
 
@@ -7,7 +12,37 @@ __all__ = ["immview"]
 
 
 def get_image(imm):
-    """Produces BGR image for display using OpenCV."""
+    """Produces BGR image for display using OpenCV.
+
+    Parameters
+    ----------
+    imm : mt.opencv.image.Image
+        an image with metadata, whose pixel format is 'gray', 'bgr', 'rgb', 'rgba' or 'bgra'
+
+    Returns
+    -------
+    numpy.ndarray
+        a uint8 image of shape `(height, width)` for 'gray' or `(height, width, 3)` in BGR order for
+        'bgr' and 'rgb'. For 'rgba' and 'bgra' the image has shape `(2*height, 2*width, 3)` and is
+        a 2x2 mosaic: the top-left is the colour image pre-multiplied by alpha, the top-right is the
+        alpha channel (in the first, blue, channel), the bottom-left is the colour image without
+        alpha, and the bottom-right is black.
+
+    Raises
+    ------
+    ValueError
+        if the pixel format is not supported, for example 'argb' and 'abgr'
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from mt import cv
+    >>> from mt.imageio.immview import get_image
+    >>> imm = cv.Image(np.array([[[10, 20, 30], [40, 50, 60]]], dtype=np.uint8))
+    >>> get_image(imm)  # RGB flipped into BGR
+    array([[[30, 20, 10],
+            [60, 50, 40]]], dtype=uint8)
+    """
     if imm.pixel_format in ["gray", "bgr"]:
         return imm.image
 
@@ -60,7 +95,20 @@ def get_image(imm):
 
 
 def view(image, max_width=640, as_ansi=True):
-    """Displays a BGR image."""
+    """Displays a BGR image.
+
+    Parameters
+    ----------
+    image : numpy.ndarray
+        a uint8 image in BGR order (or gray) of shape `(height, width[, 3])`
+    max_width : int, optional
+        the maximum width in pixels. A wider image is resized to this width, keeping the aspect
+        ratio. Default is 640.
+    as_ansi : bool, optional
+        if True, draw the image on the terminal, using :mod:`term_image` if available or ANSI
+        colours via :func:`mt.opencv.ansi.to_ansi` otherwise. If False, show it in an OpenCV
+        highgui window and wait for a key press. Default is True.
+    """
     if max_width < image.shape[1]:
         height = image.shape[0] * max_width // image.shape[1]
         image = cv.resize(image, dsize=(max_width, height))
@@ -91,19 +139,32 @@ def immview(
 ):
     """Views an image with metadata, either via OpenCV's highgui or on the terminal.
 
+    The image is converted to BGR with :func:`get_image` and displayed with :func:`view`. If a
+    logger is provided, the file path, pixel format, resolution and metadata are logged first.
+
     Parameters
     ----------
-    imm : mt.cv.Image
+    imm : mt.opencv.image.Image
         an image with metadata
-    use_highgui : bool
-        whether to use OpenCV's highgui or the terminal
-    max_width : int
-        the maximum width. Only valid if `use_highgui` is True
+    use_highgui : bool, optional
+        whether to use OpenCV's highgui window (True) or the terminal (False). Default is False.
+    max_width : int, optional
+        the maximum width in pixels. A wider image is resized to this width, keeping the aspect
+        ratio, in both display modes. Default is 640.
     filepath : str, optional
-        the filepath to the imm
+        the filepath to the imm, only used for logging
     logger : mt.logg.IndentedLoggerAdapter, optional
         logger for printing purposes
 
+    Raises
+    ------
+    ValueError
+        if the pixel format of the image is not supported
+
+    See Also
+    --------
+    mt.imageio.imread.immread
+        loads an image with metadata from file
     """
     if logger:
         if filepath:
