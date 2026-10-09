@@ -14,7 +14,7 @@ setup(
         "scripts/immview",
     ],
     install_requires=[
-        # 'h5py>=3', # for pdh5 file format. Lazy import because TX2 may not need it.
+        # 'h5py>=3', # for the 'hdf5' image file format. Lazy import because TX2 may not need it.
         "Pillow>=9.0",  # for processing PNG images
         # "term_image",  # for displaying images in terminal
         "imageio>=2.15",  # for loading image files in a modern way
