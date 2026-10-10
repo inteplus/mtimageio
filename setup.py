@@ -20,8 +20,8 @@ setup(
         "Pillow>=9.0",  # for processing PNG images
         # "term_image",  # for displaying images in terminal
         "imageio>=2.15",  # for loading image files in a modern way
-        "mtbase>=4.33.34",  # just updating
-        "mtopencv>=1.12.0",  # to have an updated immsave_asyn()
+        "mtbase>=4.34.2",  # just updating
+        "mtopencv>=1.12.1",  # to have an updated immsave_asyn()
     ],
     setup_requires=["setuptools-git-versioning>=3,<4"],
     setuptools_git_versioning={
